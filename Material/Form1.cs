@@ -64,7 +64,7 @@ namespace Material
             //    textbAnalyseFinish = "0";
             //}
 
-            string sql = "SELECT sMaterialNo as 物料编码,bAnalyseFinish as 是否完成,tUpdateTime 更新时间 FROM dbo.mmMaterial where 1=1  AND  (sMaterialNo NOT LIKE '%(%') AND(sMaterialNo NOT LIKE '%/%') AND(sMaterialNo NOT LIKE '%-%')  AND(sMaterialNo NOT LIKE '% %') ";
+            string sql = "SELECT sMaterialNo as 物料编码,ISNULL(bAnalyseFinish,0)   AS   是否完成,tUpdateTime 更新时间 FROM dbo.mmMaterial where 1=1  AND  (sMaterialNo NOT LIKE '%(%') AND(sMaterialNo NOT LIKE '%/%') AND(sMaterialNo NOT LIKE '%-%')  AND(sMaterialNo NOT LIKE '% %') ";
 
             if (!string.IsNullOrEmpty(textsMaterialNo))
             {
@@ -88,7 +88,7 @@ namespace Material
             }
             catch (Exception ee)
             {
-                MessageBox.Show(ee.Message, "数据库操作失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(ee.Message, "生成失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -97,25 +97,53 @@ namespace Material
             string smaterialNoFinish;
             string execSql;
             //string[] str = new string[dataGridView1.Rows.Count];
-
+          
             DataTable dt = (DataTable)this.dataGridView1.DataSource;
             if (dt != null)
             {
-                string a = dt.Rows[0]["bAnalyseFinish"].ToString();
-                smaterialNoFinish = dt.Rows[0]["sMaterialNo"].ToString();
-                //string c = dataGridView1[1, 1].ToString();
+                int ccc = dataGridView1.CurrentCell.RowIndex;
+
+                string a = dt.Rows[ccc]["是否完成"].ToString();
+                smaterialNoFinish = dt.Rows[ccc]["物料编码"].ToString();
                 //bool b = dataGridView1.Rows[1].Selected;
-                if (a == "True")
+                //string c = dataGridView1[1, 1].ToString();
+
+
+                //检验是否是 默认完成
+                string sqlCheck = "select  ISNULL(bAnalyseFinish,0)   AS bAnalyseFinish from mmMaterial where sMaterialno= '" + smaterialNoFinish + "'";
+                string tmp="";
+                try
+                {
+                    SqlConnection connectionString = new SqlConnection(connStr);
+                    SqlCommand cmd = new SqlCommand(sqlCheck, connectionString);
+                    connectionString.Open();
+                    DataSet ds = new DataSet();
+                    SqlDataAdapter da = new SqlDataAdapter(sqlCheck, connectionString);
+                    da.Fill(ds);
+                     tmp = ds.Tables[0].Rows[0]["bAnalyseFinish"].ToString();
+                    connectionString.Close();
+                }
+                catch (Exception ee)
+                {
+
+                    {
+                        MessageBox.Show(ee.Message, "生成失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
+
+
+
+                if (a == "True" && tmp == "False")    //手动选中 并且数据库没选中
                 {
 
                     execSql = "  DECLARE @name VARCHAR(200) SET @name ='" + smaterialNoFinish + "'  SELECT dbo.FN_Post('http://192.168.88.206:8088/fn/task/generate?materialNo=' + @name)";
                     try
                     {
-                        SqlConnection connectionString = new SqlConnection(connStr);
-                        SqlCommand cmd = new SqlCommand(execSql, connectionString);
+                        SqlConnection connectionString1 = new SqlConnection(connStr);
+                        SqlCommand cmd1 = new SqlCommand(execSql, connectionString1);
 
-                        connectionString.Open();
-                        cmd.ExecuteNonQuery();   //完成
+                        connectionString1.Open();
+                        cmd1.ExecuteNonQuery();   //完成
 
                         //string tUpdateTime = DateTime.Now.ToString();
                         ////更新 bAnalyseFinish
@@ -130,19 +158,29 @@ namespace Material
                         //SqlDataAdapter da = new SqlDataAdapter(sqlReset, conn);
                         //da.Fill(ds);
                         //dataGridView1.DataSource = ds.Tables[0];
-                        connectionString.Close();
+                        connectionString1.Close();
                     }
                     catch (Exception ee)
                     {
 
                         {
-                            MessageBox.Show(ee.Message, "数据库操作失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show(ee.Message, "生成失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                     }
+                    MessageBox.Show("生成成功！");
                 }
-                else
+                else if (a == "False" && tmp == "False")
                 {
                     MessageBox.Show("请选择是否完成！");
+                }
+                else if (a == "True" && tmp == "True")
+                {
+                    MessageBox.Show("此物料已生成，不允许生成！");
+                }
+
+                else
+                {
+                    MessageBox.Show("生成失败！");
                 }
             }
             else
