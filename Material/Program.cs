@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Windows.Forms;
 
 namespace Material
@@ -7,7 +6,7 @@ namespace Material
     static class Program
     {
 
-        private static string connectionString = ConfigurationManager.AppSettings["connectionstring"];
+        //private static string connectionString = ConfigurationManager.AppSettings["connectionstring"];
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
