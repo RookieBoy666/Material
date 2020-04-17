@@ -9,7 +9,10 @@ namespace Material
     public partial class sMaterialNo : Form
     {
         //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
-          private string connStr = Config.getMySet();
+        private string connStr = Config.getMySet("Config.txt");
+        private string connStrTmp = Config.getMySet("Config1.txt");
+
+
 
         public sMaterialNo()
         {
@@ -18,6 +21,23 @@ namespace Material
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            string connStrEncode;
+            string connStrDecode;
+            if (connStrTmp != connStr)
+            {
+                connStrEncode = Config.Encode(connStr);//加密
+                Config.WriteEncodeString(connStrEncode, "Config.txt");  //保存加密的文件()
+                Config.WriteEncodeString(connStrEncode, "Config1.txt");  //保存加密的文件
+            }
+            else
+            {
+                connStrDecode = Config.Decode(connStr.Substring(0, connStr.Length - 1));//解密
+                connStr = connStrDecode;
+            }
+            //string connStrMD5 = Config.MD5Encrypt(connStr);
+            // string connStrEncode = Config.Encode(connStr);//加密
+            //Config.WriteEncodeString(connStrEncode,"Config1.txt");  //保存加密的文件
+            // string connStrDecode = Config.Decode(connStrEncode);//解密
         }
 
         private void search_Click(object sender, EventArgs e)
@@ -30,13 +50,8 @@ namespace Material
             else
             {
                 string sql = "SELECT sMaterialNo as 物料编码,ISNULL(bAnalyseFinish,0)   AS   是否完成,tUpdateTime 更新时间 FROM dbo.mmMaterial(nolock) where sMaterialCategory='fabric' ";
-
                 sql += " and   sMaterialNo like  '%" + textsMaterialNo + "%'";
 
-                //if (!string.IsNullOrEmpty(textbAnalyseFinish))
-                //{
-                //    sql += "  and  bAnalyseFinish =  " + textbAnalyseFinish;
-                //}
                 sql += "   order by tUpdateTime desc ";
                 try
                 {
@@ -54,16 +69,6 @@ namespace Material
                     MessageBox.Show(ee.Message, "查找失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
-            //var textbAnalyseFinish = bAnalyseFinish.Text;
-            //if (textbAnalyseFinish == "是")
-            //{
-            //    textbAnalyseFinish = "1";
-            //}
-            //else
-            //{
-            //    textbAnalyseFinish = "0";
-            //}
-           
         }
         private void finish_Click(object sender, EventArgs e)
         {
@@ -75,9 +80,9 @@ namespace Material
             if (dataGridView1.Rows.Count != 0)
             {
                 int ccc = dataGridView1.CurrentCell.RowIndex;//当前行下标
-                             //string a = dt.Rows[ccc]["是否完成"].ToString();
-                              //smaterialNoFinish = dt.Rows[ccc]["物料编码"].ToString();
-                              //bool b = dataGridView1.Rows[1].Selected;
+                                                             //string a = dt.Rows[ccc]["是否完成"].ToString();
+                                                             //smaterialNoFinish = dt.Rows[ccc]["物料编码"].ToString();
+                                                             //bool b = dataGridView1.Rows[1].Selected;
                 smaterialNoFinish = dataGridView1[0, ccc].Value.ToString();//当前行物料编码
                 string a = dataGridView1[1, ccc].Value.ToString();//当前行  是否完成
 
@@ -134,7 +139,6 @@ namespace Material
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-
                 search.PerformClick();
         }
     }
