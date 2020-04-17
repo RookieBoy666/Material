@@ -8,7 +8,7 @@ namespace Material
 {
     public partial class sMaterialNo : Form
     {
-        //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
+         //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
         private string connStr = Config.getMySet("Config.txt");
         private string connStrTmp = Config.getMySet("Config1.txt");
 
@@ -112,6 +112,9 @@ namespace Material
                     {
                         {
                             MessageBox.Show(ee.Message, "生成失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            Log logFail= new Log();
+                            var failTime = System.DateTime.Now;
+                            logFail.RegisterLog("物料编码:" + smaterialNoFinish, "失败时间:" + failTime.ToString());
                         }
                     }
                     //   dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Red;
