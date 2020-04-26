@@ -8,12 +8,12 @@ namespace Material
 {
     public partial class sMaterialNo : Form
     {
-         //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
+        //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
         private string connStr = Config.getMySet("Config.txt");
         private string connStrTmp = Config.getMySet("Config1.txt");
 
 
-
+        
         public sMaterialNo()
         {
             InitializeComponent();
@@ -31,13 +31,18 @@ namespace Material
             }
             else
             {
-                connStrDecode = Config.Decode(connStr.Substring(0, connStr.Length - 1));//解密
-                connStr = connStrDecode;
+                if (connStr == "")
+                {
+                    MessageBox.Show("配置文件Config.txt中数据库连接串不正确！");
+                }
+                else
+                {
+                    connStrDecode = Config.Decode(connStr.Substring(0, connStr.Length - 1));//解密
+                    connStr = connStrDecode;
+                }
+             
             }
-            //string connStrMD5 = Config.MD5Encrypt(connStr);
-            // string connStrEncode = Config.Encode(connStr);//加密
-            //Config.WriteEncodeString(connStrEncode,"Config1.txt");  //保存加密的文件
-            // string connStrDecode = Config.Decode(connStrEncode);//解密
+
         }
 
         private void search_Click(object sender, EventArgs e)
@@ -76,7 +81,7 @@ namespace Material
             string execSql;
             //int ccc = dataGridView1.CurrentCell.RowIndex;
             //string[] str = new string[dataGridView1.Rows.Count];
-            DataTable dt = (DataTable)this.dataGridView1.DataSource;
+            // DataTable dt = (DataTable)this.dataGridView1.DataSource;   //数据集转化为DataTable
             if (dataGridView1.Rows.Count != 0)
             {
                 int ccc = dataGridView1.CurrentCell.RowIndex;//当前行下标
@@ -112,7 +117,7 @@ namespace Material
                     {
                         {
                             MessageBox.Show(ee.Message, "生成失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            Log logFail= new Log();
+                            Log logFail = new Log();
                             var failTime = System.DateTime.Now;
                             logFail.RegisterLog("物料编码:" + smaterialNoFinish, "失败时间:" + failTime.ToString());
                         }
