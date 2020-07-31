@@ -78,7 +78,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQL.xml" />
     <Compile Include="Config.cs" />
+    <Compile Include="ConfigHelper.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

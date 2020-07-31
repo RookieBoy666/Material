@@ -9,11 +9,11 @@ namespace Material
     public partial class sMaterialNo : Form
     {
         //private string connStr = ConfigurationManager.AppSettings["connectionstring"];
-        private string connStr = Config.getMySet("Config.txt");
-        private string connStrTmp = Config.getMySet("Config1.txt");
+       // private string connStr = Config.getMySet("Config.txt");
+      //  private string connStrTmp = Config.getMySet("Config1.txt");
+        public static string connStr = ConfigHelper.GetConnectSql("SQL.xml");
 
 
-        
         public sMaterialNo()
         {
             InitializeComponent();
@@ -21,27 +21,27 @@ namespace Material
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string connStrEncode;
-            string connStrDecode;
-            if (connStrTmp != connStr)
-            {
-                connStrEncode = Config.Encode(connStr);//加密
-                Config.WriteEncodeString(connStrEncode, "Config.txt");  //保存加密的文件()
-                Config.WriteEncodeString(connStrEncode, "Config1.txt");  //保存加密的文件
-            }
-            else
-            {
-                if (connStr == "")
-                {
-                    MessageBox.Show("配置文件Config.txt中数据库连接串不正确！");
-                }
-                else
-                {
-                    connStrDecode = Config.Decode(connStr.Substring(0, connStr.Length - 1));//解密
-                    connStr = connStrDecode;
-                }
+            //string connStrEncode;
+            //string connStrDecode;
+            //if (connStrTmp != connStr)
+            //{
+            //    connStrEncode = Config.Encode(connStr);//加密
+            //    Config.WriteEncodeString(connStrEncode, "Config.txt");  //保存加密的文件()
+            //    Config.WriteEncodeString(connStrEncode, "Config1.txt");  //保存加密的文件
+            //}
+            //else
+            //{
+            //    if (connStr == "")
+            //    {
+            //        MessageBox.Show("配置文件Config.txt中数据库连接串不正确！");
+            //    }
+            //    else
+            //    {
+            //        connStrDecode = Config.Decode(connStr.Substring(0, connStr.Length - 1));//解密
+            //        connStr = connStrDecode;
+            //    }
              
-            }
+            //}
 
         }
 
